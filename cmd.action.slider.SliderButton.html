@@ -13,11 +13,11 @@
   <div class="content">
     <div class="input-group buttons">
       <span class="input-group-btn" style="position: relative;">
-        <a class="bt_minusSB"><img id="minusSB" height="40px" src=""></a>
+        <a class="bt_minusSB"><img id="minusSB"></a>
       </span>
       <input class="input-SB" value="#state# #unite#"/>
       <span class="input-group-btn" style="position: relative;">
-        <a class="bt_plusSB"><img id="plusSB" height="40px" src=""></a>
+        <a class="bt_plusSB"><img id="plusSB"></a>
       </span>
     </div>
   </div>
@@ -26,9 +26,12 @@
     var style = ('#style#' == 'noir') ? 'noir' : 'blanc';
     var colMinus = ('#moins#' != '#'+'moins#') ? '#moins#' : 'bleu';
     var colPlus = ('#plus#' != '#'+'plus#') ? '#plus#' : 'rouge';
-    cmd.find('#minusSB').attr('src', '/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SBminus_'+style+'_'+colMinus+'.png');
-    cmd.find('#plusSB').attr('src', '/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SBplus_'+style+'_'+colPlus+'.png');
-    cmd.find('input.input-SB').css({'background-image':'url(/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SB_'+style+'.png)','background-size': '55px 40px'});
+    var height = is_numeric('#hauteur#') ? parseFloat('#hauteur#'):40;
+    var width = is_numeric('#largeur#') ? parseFloat('#largeur#'):50;
+    var fontSize = is_numeric('#font-size#') ? parseFloat('#font-size#'):12;
+    cmd.find('#minusSB').attr({'height': height+'px', 'src': '/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SBminus_'+style+'_'+colMinus+'.png'});
+    cmd.find('#plusSB').attr({'height': height+'px', 'src': '/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SBplus_'+style+'_'+colPlus+'.png'});
+    cmd.find('input.input-SB').css({'font-size': fontSize+'px', 'height': height+'px', 'width': +width+'px', 'background-image':'url(/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SB_'+style+'.png)','background-size': 'auto '+height+'px'});
     
     cmd.find('.bt_plusSB').on('click', function () {
       let max = ('#maxValue#' == '') ?  Number.MAX_VALUE : parseFloat('#maxValue#');
@@ -61,17 +64,13 @@
   </script>
 <style>
 @font-face {
-    font-family: "nasalization";
-  	src:	url("data/customTemplates/dashboard/cmd.action.slider.SliderButton/nasalization.ttf") format("truetype");
+  font-family: "nasalization";
+  src: url("data/customTemplates/dashboard/cmd.action.slider.SliderButton/nasalization.ttf") format("truetype");
 }  
 input.input-SB {
-  height: 40px;
-  width: 55px;
   text-align: center;
   font-family:"nasalization";
   font-weight: normal;
-  font-size:12px;
-  padding: 0!important;
   border: none!important;
   }
 input:not(.btn):not(.dial):not([type="radio"]):not([type="image"]):not(.expressionAttr):not(.knob):not([type="checkbox"]).input-SB {
