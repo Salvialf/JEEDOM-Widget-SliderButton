@@ -36,7 +36,7 @@
     cmd.find('#minusSB').attr({'height': height+'px', 'src': '/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SBminus_'+style+'_'+colMinus+'.png'});
     cmd.find('#plusSB').attr({'height': height+'px', 'src': '/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SBplus_'+style+'_'+colPlus+'.png'});
     cmd.find('input.input-SB').css({'font-size': fontSize+'px', 'height': height+'px', 'width': +width+'px', 'background-image':'url(/data/customTemplates/dashboard/cmd.action.slider.SliderButton/SB_'+style+'.png)','background-size': 'auto '+height+'px'});
-	cmd.find('#SliderButton').css('color',''+couleurValeur+'');
+	cmd.find('#SliderButton').attr('style','color:'+couleurValeur+'!important');
     
     cmd.find('.bt_plusSB').on('click', function () {
       let max = ('#maxValue#' == '') ?  Number.MAX_VALUE : parseFloat('#maxValue#');
