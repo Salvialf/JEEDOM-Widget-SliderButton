@@ -1,0 +1,104 @@
+<div style="margin:5px;" class="cmd cmd-widget" data-type="action" data-subtype="slider" data-cmd_id="#id#" data-cmd_uid="#uid#" data-version="#version#" data-eqLogic_id="#eqLogic_id#">
+  <div class="title #hide_name#">
+    <div class="cmdName">#name_display#</div>
+  </div>
+  <div class="content" id="SliderButton">
+    <div class="input-group buttons">
+      <span class="input-group-btn" style="position: relative;">
+        <a class="bt_minusSB"><img id="minusSB"></a>
+      </span>
+      <input class="input-SB" value="#state# #unite#"/>
+      <span class="input-group-btn" style="position: relative;">
+        <a class="bt_plusSB"><img id="plusSB"></a>
+      </span>
+    </div>
+  </div>
+  <span class="timeCmd label label-default #value_history#" data-type="info" data-cmd_id="#value_id#"></span>
+<script>
+    var cmd = $('.cmd[data-cmd_uid=#uid#]');
+    var style = ('#theme#' == 'dark') ? 'dark' : 'light';
+    var colMinus = ('#minus#' != '#'+'minus#') ? '#minus#' : 'blue';
+    var colPlus = ('#plus#' != '#'+'plus#') ? '#plus#' : 'red';
+    var couleurValeur = ('#font-color#' != '#'+'font-color#') ? '#font-color#' : 'black';
+    var height = is_numeric('#height#') ? parseFloat('#height#'):40;
+    var width = is_numeric('#width#') ? parseFloat('#width#'):50;
+    var fontSize = is_numeric('#font-size#') ? parseFloat('#font-size#'):12;
+    ('#CSS-time#' != '#'+'CSS-time#' && '#CSS-time#' != ' ') ? cmd.find('.timeCmd').attr('style','#CSS-time#') : '';
+    cmd.find('#minusSB').attr({'height': height+'px', 'src': '/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SBminus_'+style+'_'+colMinus+'.png'});
+    cmd.find('#plusSB').attr({'height': height+'px', 'src': '/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SBplus_'+style+'_'+colPlus+'.png'});
+    cmd.find('input.input-SB').css({'font-size': fontSize+'px', 'height': height+'px', 'width': +width+'px', 'background-image':'url(/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SB_'+style+'.png)','background-size': 'auto '+height+'px'});
+    cmd.find('#SliderButton').attr('style','color:'+couleurValeur+'!important');
+
+    if ('#font#'!='#'+'font#' && '#font#'!='default') {
+    let nameFont = '#font#';
+    let font = new FontFace(nameFont, "url(data/fonts/"+nameFont+".ttf)");
+	  font.load();
+	  document.fonts.add(font);
+    cmd.find('input.input-SB').css('font-family', nameFont);
+    }
+
+    cmd.find('.bt_plusSB').on('click', function () {
+      let max = ('#maxValue#' == '') ?  Number.MAX_VALUE : parseFloat('#maxValue#');
+      let step = is_numeric('#step#') ?  parseFloat('#step#') : 0.5;
+      if (parseFloat($('.cmd[data-cmd_uid=#uid#] .input-SB').val()) <= max - step ){
+        jeedom.cmd.update['#id#']({display_value:parseFloat($('.cmd[data-cmd_uid=#uid#] .input-SB').val()) + step});
+        $('.cmd[data-cmd_uid=#uid#] .input-SB').trigger('change');
+      }
+    });
+    cmd.find('.bt_minusSB').on('click', function () {
+      let min = ('#minValue#' == '') ? Number.MIN_VALUE : parseFloat('#minValue#');
+      let step = is_numeric('#step#') ?  parseFloat('#step#') : 0.5;
+      if (parseFloat($('.cmd[data-cmd_uid=#uid#] .input-SB').val()) >= min + step){
+        jeedom.cmd.update['#id#']({display_value:parseFloat($('.cmd[data-cmd_uid=#uid#] .input-SB').val()) - step});
+        $('.cmd[data-cmd_uid=#uid#] .input-SB').trigger('change');
+      }
+    });
+    $('.cmd[data-cmd_uid=#uid#] .input-SB').on('change', function () {
+      if (typeof timerHandle#uid# !== 'undefined') {
+        clearTimeout(timerHandle#uid#);
+      }
+      timerHandle#uid# = setTimeout(function() {
+        jeedom.cmd.execute({id:'#id#', value: {slider: $('.cmd[data-cmd_uid=#uid#] .input-SB').val().replace("#unite#", "").replace(" ", "")}});
+      }, 1000)
+    });
+
+    jeedom.cmd.update['#id#'] = function(_options){
+      cmd.find('.input-SB').val(_options.display_value+' #unite#');
+
+      if (isset(_options.valueDate)) {
+        if ('#time#' == 'duration') {
+          jeedom.cmd.displayDuration(_options.valueDate,cmd.find('.timeCmd'));
+        }
+        else if ('#time#' == 'date') {
+          let week = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
+          let date = new Date(_options.valueDate.replace(' ', 'T'));
+          let t = _options.valueDate.split(/[- :]/);
+          let format = week[date.getDay()]+" "+t[2]+"/"+t[1];
+          let time = "à "+t[3]+":"+t[4];
+          cmd.find('.timeCmd').html(format+'<br>'+time);
+        }
+        else if ('#time#' == 'hour') {
+          let t = _options.valueDate.split(/[- :]/);
+          let time = "à "+t[3]+":"+t[4]+":"+t[5];
+          cmd.find('.timeCmd').html(time);
+        }
+      }
+    }
+    jeedom.cmd.update['#id#']({display_value:'#state#',valueDate:'#valueDate#',collectDate:'#collectDate#',alertLevel:'#alertLevel#'});
+</script>
+<style>
+@font-face {
+  font-family: "nasalization";
+  src: url("plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/nasalization.ttf") format("truetype");
+}
+input.input-SB {
+  text-align: center;
+  font-family:"nasalization";
+  font-weight: normal;
+  border: none!important;
+  }
+input:not(.btn):not(.dial):not([type="radio"]):not([type="image"]):not(.expressionAttr):not(.knob):not([type="checkbox"]).input-SB {
+  color: unset!important;
+  }
+</style>
+</div>
