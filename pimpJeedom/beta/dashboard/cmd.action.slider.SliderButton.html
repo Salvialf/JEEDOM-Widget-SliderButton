@@ -13,7 +13,7 @@
       </span>
     </div>
   </div>
-  <span class="timeCmd label label-default #value_history#" data-type="info" data-cmd_id="#value_id#"></span>
+  <span class="timeCmd #value_history#" data-type="info" data-cmd_id="#value_id#"></span>
 <script>
     var cmd = $('.cmd[data-cmd_uid=#uid#]');
     var style = ('#theme#' == 'dark') ? 'dark' : 'light';
@@ -23,13 +23,13 @@
     var height = is_numeric('#height#') ? parseFloat('#height#'):40;
     var width = is_numeric('#width#') ? parseFloat('#width#'):50;
     var fontSize = is_numeric('#font-size#') ? parseFloat('#font-size#'):12;
-    ('#CSS-time#' != '#'+'CSS-time#' && '#CSS-time#' != ' ') ? cmd.find('.timeCmd').attr('style','#CSS-time#') : '';
+    ('#CSS-time#' != '#'+'CSS-time#' && '#CSS-time#' != '') ? cmd.find('.timeCmd').attr('style','#CSS-time#') : '';
     cmd.find('#minusSB').attr({'height': height+'px', 'src': '/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SBminus_'+style+'_'+colMinus+'.png'});
     cmd.find('#plusSB').attr({'height': height+'px', 'src': '/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SBplus_'+style+'_'+colPlus+'.png'});
     cmd.find('input.input-SB').css({'font-size': fontSize+'px', 'height': height+'px', 'width': +width+'px', 'background-image':'url(/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SB_'+style+'.png)','background-size': 'auto '+height+'px'});
     cmd.find('#SliderButton').attr('style','color:'+couleurValeur+'!important');
 
-    if ('#font#'!='#'+'font#' && '#font#'!='default') {
+    if ('#font#' !='#'+'font#' && '#font#' !='default') {
     let nameFont = '#font#';
     let font = new FontFace(nameFont, "url(data/fonts/"+nameFont+".ttf)");
 	  font.load();
@@ -63,7 +63,7 @@
     });
 
     jeedom.cmd.update['#id#'] = function(_options){
-      cmd.find('.input-SB').val(_options.display_value+' #unite#');
+      $('.cmd[data-cmd_uid=#uid#] .input-SB').val(_options.display_value+' #unite#');
 
       if (isset(_options.valueDate)) {
         if ('#time#' == 'duration') {
@@ -81,8 +81,11 @@
           let t = _options.valueDate.split(/[- :]/);
           let time = "à "+t[3]+":"+t[4]+":"+t[5];
           cmd.find('.timeCmd').html(time);
+        } else {
+          cmd.find('.timeCmd').attr('style','');
         }
       }
+
     }
     jeedom.cmd.update['#id#']({display_value:'#state#',valueDate:'#valueDate#',collectDate:'#collectDate#',alertLevel:'#alertLevel#'});
 </script>
@@ -100,5 +103,12 @@ input.input-SB {
 input:not(.btn):not(.dial):not([type="radio"]):not([type="image"]):not(.expressionAttr):not(.knob):not([type="checkbox"]).input-SB {
   color: unset!important;
   }
+.timeCmd {
+  font-size:11px;
+  padding:2px 4px 2px 4px;
+  margin-top:4px;
+  line-height:1em!important;
+  display:inline-block!important;
+}
 </style>
 </div>
