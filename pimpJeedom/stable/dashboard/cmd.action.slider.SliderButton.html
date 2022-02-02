@@ -8,110 +8,110 @@
     <a class="SB-plus"><img></a>
   </div>
   <span class="timeCmd #value_history#"></span>
+  <script>
+    var cmd = $('.cmd[data-cmd_uid=#uid#]')
+    var style = ('#theme#' == 'dark') ? 'dark' : 'light'
+    var colMinus = ('#minus#' != '#'+'minus#') ? '#minus#' : 'turquoise'
+    var colPlus = ('#plus#' != '#'+'plus#') ? '#plus#' : 'red'
+    var couleurValeur = ('#font-color#' != '#'+'font-color#') ? '#font-color#' : 'black'
+    var height = is_numeric('#height#') ? parseFloat('#height#'):40
+    var width = is_numeric('#width#') ? parseFloat('#width#'):50
+    var fontSize = is_numeric('#font-size#') ? parseFloat('#font-size#'):12
+
+    cmd.find('.SB-minus > img').attr({'height': height+'px', 'src': '/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SBminus_'+style+'_'+colMinus+'.png'})
+    cmd.find('.SB-plus > img').attr({'height': height+'px', 'src': '/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SBplus_'+style+'_'+colPlus+'.png'})
+    cmd.find('input.SB-input').css({'font-size': fontSize+'px', 'height': height+'px', 'width': +width+'px', 'background-image':'url(/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SB_'+style+'.png)','background-size': 'auto '+height+'px'})
+    cmd.find('.SliderButton').attr('style','color:'+couleurValeur+'!important')
+
+    if ('#CSS-time#' != '#'+'CSS-time#' && '#CSS-time#' != '') {
+      cmd.find('span.timeCmd').attr('style','#CSS-time#')
+    }
+    if ('#font#' !='#'+'font#' && '#font#' !='default') {
+      let nameFont = '#font#'
+      let font = new FontFace(nameFont, "url(data/fonts/"+nameFont+".ttf)")
+      font.load()
+      document.fonts.add(font)
+      cmd.find('input.SB-input').css('font-family', nameFont)
+    }
+
+    cmd.find('.SB-plus').on('click', function () {
+      let max = ('#maxValue#' == '') ?  Number.MAX_VALUE : parseFloat('#maxValue#')
+      let step = is_numeric('#step#') ?  parseFloat('#step#') : 0.5
+      if (parseFloat($('.cmd[data-cmd_uid=#uid#] .SB-input').val()) <= max - step ){
+        jeedom.cmd.update['#id#']({display_value:parseFloat($('.cmd[data-cmd_uid=#uid#] .SB-input').val()) + step})
+        $('.cmd[data-cmd_uid=#uid#] .SB-input').trigger('change')
+      }
+    })
+    cmd.find('.SB-minus').on('click', function () {
+      let min = ('#minValue#' == '') ? Number.MIN_VALUE : parseFloat('#minValue#')
+      let step = is_numeric('#step#') ?  parseFloat('#step#') : 0.5
+      if (parseFloat($('.cmd[data-cmd_uid=#uid#] .SB-input').val()) >= min + step){
+        jeedom.cmd.update['#id#']({display_value:parseFloat($('.cmd[data-cmd_uid=#uid#] .SB-input').val()) - step})
+        $('.cmd[data-cmd_uid=#uid#] .SB-input').trigger('change')
+      }
+    })
+    $('.cmd[data-cmd_uid=#uid#] .SB-input').on('change', function () {
+      if (typeof timerHandle#uid# !== 'undefined') {
+        clearTimeout(timerHandle#uid#)
+      }
+      timerHandle#uid# = setTimeout(function() {
+        jeedom.cmd.execute({id:'#id#', value: {slider: $('.cmd[data-cmd_uid=#uid#] .SB-input').val().replace("#unite#", "").replace(" ", "")}})
+      }, 1000)
+    })
+
+    jeedom.cmd.update['#id#'] = function(_options){
+      $('.cmd[data-cmd_uid=#uid#] .SB-input').val(_options.display_value+' #unite#')
+
+      if (isset(_options.valueDate)) {
+        if ('#time#' == 'duration') {
+          jeedom.cmd.displayDuration(_options.valueDate,cmd.find('.timeCmd'))
+        }
+        else if ('#time#' == 'date') {
+          let week = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.']
+          let date = new Date(_options.valueDate.replace(' ', 'T'))
+          let t = _options.valueDate.split(/[- :]/)
+          let format = week[date.getDay()]+" "+t[2]+"/"+t[1]
+          let time = "à "+t[3]+":"+t[4]
+          cmd.find('.timeCmd').html(format+'<br>'+time)
+        }
+        else if ('#time#' == 'hour') {
+          let t = _options.valueDate.split(/[- :]/)
+          let time = "à "+t[3]+":"+t[4]+":"+t[5]
+          cmd.find('.timeCmd').html(time)
+        }
+        else {
+          cmd.find('.timeCmd').remove()
+        }
+      }
+
+    }
+    jeedom.cmd.update['#id#']({display_value:'#state#',valueDate:'#valueDate#',collectDate:'#collectDate#',alertLevel:'#alertLevel#'})
+  </script>
+  <style>
+    @font-face {
+      font-family: "nasalization";
+      src: url("plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/nasalization.ttf") format("truetype");
+    }
+    .SliderButton {
+      display:flex;
+      justify-content:center
+    }
+    input.SB-input {
+      text-align: center;
+      font-family:"nasalization";
+      font-weight: normal;
+      border: none!important;
+      border-radius: 0!important;
+    }
+    input:not(.btn):not(.dial):not([type="radio"]):not([type="image"]):not(.expressionAttr):not(.knob):not([type="checkbox"]).SB-input {
+      color: unset!important;
+    }
+    .timeCmd {
+      font-size:11px;
+      padding:2px 4px 2px 4px;
+      margin-top:2px;
+      line-height:1em!important;
+      display:inline-block!important;
+    }
+  </style>
 </div>
-<script>
-  var cmd = $('.cmd[data-cmd_uid=#uid#]')
-  var style = ('#theme#' == 'dark') ? 'dark' : 'light'
-  var colMinus = ('#minus#' != '#'+'minus#') ? '#minus#' : 'turquoise'
-  var colPlus = ('#plus#' != '#'+'plus#') ? '#plus#' : 'red'
-  var couleurValeur = ('#font-color#' != '#'+'font-color#') ? '#font-color#' : 'black'
-  var height = is_numeric('#height#') ? parseFloat('#height#'):40
-  var width = is_numeric('#width#') ? parseFloat('#width#'):50
-  var fontSize = is_numeric('#font-size#') ? parseFloat('#font-size#'):12
-
-  cmd.find('.SB-minus > img').attr({'height': height+'px', 'src': '/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SBminus_'+style+'_'+colMinus+'.png'})
-  cmd.find('.SB-plus > img').attr({'height': height+'px', 'src': '/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SBplus_'+style+'_'+colPlus+'.png'})
-  cmd.find('input.SB-input').css({'font-size': fontSize+'px', 'height': height+'px', 'width': +width+'px', 'background-image':'url(/plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/SB_'+style+'.png)','background-size': 'auto '+height+'px'})
-  cmd.find('.SliderButton').attr('style','color:'+couleurValeur+'!important')
-
-  if ('#CSS-time#' != '#'+'CSS-time#' && '#CSS-time#' != '') {
-    cmd.find('span.timeCmd').attr('style','#CSS-time#')
-  }
-  if ('#font#' !='#'+'font#' && '#font#' !='default') {
-    let nameFont = '#font#'
-    let font = new FontFace(nameFont, "url(data/fonts/"+nameFont+".ttf)")
-    font.load()
-    document.fonts.add(font)
-    cmd.find('input.SB-input').css('font-family', nameFont)
-  }
-
-  cmd.find('.SB-plus').on('click', function () {
-    let max = ('#maxValue#' == '') ?  Number.MAX_VALUE : parseFloat('#maxValue#')
-    let step = is_numeric('#step#') ?  parseFloat('#step#') : 0.5
-    if (parseFloat($('.cmd[data-cmd_uid=#uid#] .SB-input').val()) <= max - step ){
-      jeedom.cmd.update['#id#']({display_value:parseFloat($('.cmd[data-cmd_uid=#uid#] .SB-input').val()) + step})
-      $('.cmd[data-cmd_uid=#uid#] .SB-input').trigger('change')
-    }
-  })
-  cmd.find('.SB-minus').on('click', function () {
-    let min = ('#minValue#' == '') ? Number.MIN_VALUE : parseFloat('#minValue#')
-    let step = is_numeric('#step#') ?  parseFloat('#step#') : 0.5
-    if (parseFloat($('.cmd[data-cmd_uid=#uid#] .SB-input').val()) >= min + step){
-      jeedom.cmd.update['#id#']({display_value:parseFloat($('.cmd[data-cmd_uid=#uid#] .SB-input').val()) - step})
-      $('.cmd[data-cmd_uid=#uid#] .SB-input').trigger('change')
-    }
-  })
-  $('.cmd[data-cmd_uid=#uid#] .SB-input').on('change', function () {
-    if (typeof timerHandle#uid# !== 'undefined') {
-      clearTimeout(timerHandle#uid#)
-    }
-    timerHandle#uid# = setTimeout(function() {
-      jeedom.cmd.execute({id:'#id#', value: {slider: $('.cmd[data-cmd_uid=#uid#] .SB-input').val().replace("#unite#", "").replace(" ", "")}})
-    }, 1000)
-  })
-
-  jeedom.cmd.update['#id#'] = function(_options){
-    $('.cmd[data-cmd_uid=#uid#] .SB-input').val(_options.display_value+' #unite#')
-
-    if (isset(_options.valueDate)) {
-      if ('#time#' == 'duration') {
-        jeedom.cmd.displayDuration(_options.valueDate,cmd.find('.timeCmd'))
-      }
-      else if ('#time#' == 'date') {
-        let week = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.']
-        let date = new Date(_options.valueDate.replace(' ', 'T'))
-        let t = _options.valueDate.split(/[- :]/)
-        let format = week[date.getDay()]+" "+t[2]+"/"+t[1]
-        let time = "à "+t[3]+":"+t[4]
-        cmd.find('.timeCmd').html(format+'<br>'+time)
-      }
-      else if ('#time#' == 'hour') {
-        let t = _options.valueDate.split(/[- :]/)
-        let time = "à "+t[3]+":"+t[4]+":"+t[5]
-        cmd.find('.timeCmd').html(time)
-      }
-      else {
-        cmd.find('.timeCmd').remove()
-      }
-    }
-
-  }
-  jeedom.cmd.update['#id#']({display_value:'#state#',valueDate:'#valueDate#',collectDate:'#collectDate#',alertLevel:'#alertLevel#'})
-</script>
-<style>
-  @font-face {
-    font-family: "nasalization";
-    src: url("plugins/pimpJeedom/core/template/dashboard/cmd.action.slider.SliderButton/nasalization.ttf") format("truetype");
-  }
-  .SliderButton {
-    display:flex;
-    justify-content:center
-  }
-  input.SB-input {
-    text-align: center;
-    font-family:"nasalization";
-    font-weight: normal;
-    border: none!important;
-    border-radius: 0!important;
-  }
-  input:not(.btn):not(.dial):not([type="radio"]):not([type="image"]):not(.expressionAttr):not(.knob):not([type="checkbox"]).SB-input {
-    color: unset!important;
-  }
-  .timeCmd {
-    font-size:11px;
-    padding:2px 4px 2px 4px;
-    margin-top:2px;
-    line-height:1em!important;
-    display:inline-block!important;
-  }
-</style>
